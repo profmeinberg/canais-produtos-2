@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canais de Vendas — Versão Produto</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;color:#111;background:#f5f6fa;min-height:100vh}
+.app{max-width:920px;margin:0 auto;padding:1rem 1rem 4rem}
+.header{border:1px solid #dde1ea;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;background:#fff}
+.header h1{font-size:17px;font-weight:600;margin-bottom:3px;color:#1a3a1a}
+.header p{font-size:12px;color:#666}
+.stepper{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid #dde1ea;border-radius:12px;overflow:hidden;background:#fff}
+.step-btn{flex:1;padding:10px 4px;font-size:11px;font-weight:500;border:none;border-right:1px solid #dde1ea;background:#fff;color:#888;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4}
+.step-btn:last-child{border-right:none}
+.step-btn.active{background:#e8f5e9;color:#1b5e20;font-weight:700}
+.step-btn.done{background:#e3f2fd;color:#0d47a1}
+.step-btn:hover:not(.active):not(.done){background:#f5f6fa}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border:1px solid #dde1ea;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:15px;font-weight:600;margin-bottom:1rem;color:#1b5e20;display:flex;align-items:center;gap:6px}
+label{font-size:12px;color:#555;display:block;margin-bottom:4px}
+input[type=text],textarea,select{width:100%;font-size:13px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#111;outline:none;font-family:inherit;padding:7px 10px;transition:border-color .15s}
+textarea{resize:vertical;line-height:1.6}
+input[type=text]:focus,textarea:focus,select:focus{border-color:#388e3c;box-shadow:0 0 0 2px rgba(56,142,60,.1)}
+.field{margin-bottom:10px}
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:620px){.col2,.col3{grid-template-columns:1fr}.stepper{flex-wrap:wrap}.step-btn{flex:1 1 45%;border-right:1px solid #dde1ea;border-bottom:1px solid #dde1ea}.var-hrow,.var-row{grid-template-columns:15% 20% 27% 11% 27%}}
+.btn-nav{display:flex;gap:8px;margin-top:1.25rem;flex-wrap:wrap;align-items:center}
+.btn-p{background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-p:hover{background:#388e3c}
+.btn-s{background:#fff;color:#444;border:1px solid #ccc;border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer}
+.btn-s:hover{background:#f5f6fa}
+.btn-green{background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-orange{background:#e65100;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;font-weight:600}
+.membro-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.membro-num{font-size:12px;color:#aaa;min-width:20px;font-weight:600}
+.rm-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:20px;line-height:1;padding:0 4px}
+.rm-btn:hover{color:#e53935}
+.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:8px;margin-top:14px}
+.info-bar{background:#e8f5e9;border-left:4px solid #388e3c;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:#1b5e20;margin-bottom:14px;line-height:1.5}
+
+/* SELEÇÃO DE PRODUTO */
+.produtos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:500px){.produtos-grid{grid-template-columns:1fr}}
+.produto-card{border:1.5px solid #dde1ea;border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;background:#fff}
+.produto-card:hover{border-color:#81c784;background:#f1f8e9}
+.produto-card.selecionado{border-color:#2e7d32;background:#e8f5e9}
+.produto-card h4{font-size:13px;font-weight:700;margin-bottom:4px;color:#1b5e20}
+.produto-card .prod-nome{font-size:11px;color:#555;margin-bottom:6px;font-style:italic}
+.produto-card .persona-resumo{font-size:10px;color:#666;line-height:1.5;border-top:1px solid #e0e0e0;padding-top:6px;margin-top:6px}
+.produto-selecionado-info{background:#e8f5e9;border:1px solid #81c784;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px}
+
+/* PARTE 1 */
+.p1-var{border:1px solid #dde1ea;border-radius:12px;overflow:hidden;margin-bottom:1rem;background:#fff}
+.p1-head{background:#f1f8e9;padding:10px 14px;border-bottom:1px solid #dde1ea}
+.p1-head h3{font-size:13px;font-weight:700;margin-bottom:2px;color:#1b5e20}
+.p1-head p{font-size:11px;color:#555;line-height:1.5}
+.p1-body{padding:12px 14px}
+.p1-pergunta{font-size:12px;font-style:italic;color:#555;margin-bottom:10px;line-height:1.5}
+.opcoes-row{display:flex;gap:8px}
+.opcao{flex:1;border:1px solid #dde1ea;border-radius:8px;padding:10px 8px;cursor:pointer;transition:all .15s;text-align:center;user-select:none}
+.opcao:hover{border-color:#81c784;background:#f1f8e9}
+.opcao.sel-1{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32}
+.opcao.sel-2{background:#f5f6fa;border-color:#9e9e9e}
+.opcao.sel-3{background:#fff3e0;border-color:#e65100;color:#e65100}
+.opcao-num{font-size:18px;font-weight:700;display:block;margin-bottom:4px}
+.opcao-label{font-size:10px;line-height:1.3}
+.insight-box{margin-top:10px}
+.insight-box label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.insight-box textarea{min-height:56px;font-size:12px;margin-top:4px}
+
+/* PARTE 2 */
+.grupo-box{margin-bottom:1rem}
+.grupo-head{background:#2e7d32;border-radius:8px 8px 0 0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.grupo-head h3{font-size:13px;font-weight:700;color:#fff}
+.grupo-score-badge{font-size:12px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.2);color:#fff;font-weight:700}
+.var-rows{border:1px solid #dde1ea;border-top:none;border-radius:0 0 8px 8px;overflow-x:auto}
+.var-hrow{display:grid;grid-template-columns:14% 22% 27% 10% 27%;min-width:700px;background:#f1f8e9;border-bottom:1px solid #dde1ea}
+.vh{padding:7px 10px;font-size:10px;font-weight:700;color:#2e7d32;text-transform:uppercase;letter-spacing:.04em}
+.vh.opt{text-align:center;border-left:1px solid #dde1ea}
+.var-row{display:grid;grid-template-columns:14% 22% 27% 10% 27%;min-width:700px;border-bottom:1px solid #eee;background:#fff;transition:background .1s}
+.var-row:last-child{border-bottom:none}
+.var-row:hover{background:#fafff8}
+.vcell{padding:9px 10px;font-size:12px;display:flex;align-items:flex-start;flex-direction:column;gap:3px}
+.vcell.nome{border-right:1px solid #eee;justify-content:center}
+.vcell.nome strong{font-weight:700;font-size:12px}
+.vcell.nome em{font-size:10px;color:#888;font-style:italic}
+.vcell.desc{border-right:1px solid #eee;font-size:11px;color:#555;line-height:1.5;justify-content:flex-start}
+.vcell.opt1{border-right:1px solid #eee;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;overflow:hidden}
+.vcell.opt2{border-right:1px solid #eee;padding:8px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.vcell.opt3{padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;overflow:hidden}
+.opt-label-top{font-size:11px;font-weight:700;text-align:center}
+.opt-label-top.direto{color:#2e7d32}
+.opt-label-top.indireto{color:#e65100}
+.opt-desc{font-size:9px;font-style:italic;color:#555;text-align:center;line-height:1.4;border:1px solid #ddd;border-radius:4px;padding:4px 5px;background:#fafafa;width:100%;word-break:break-word;box-sizing:border-box}
+.opt-desc.d1{border-color:#a5d6a7;background:#f1f9f1}
+.opt-desc.d3{border-color:#ffcc80;background:#fff9f1}
+.v-opt-btn{width:38px;height:38px;border-radius:50%;border:2px solid #dde1ea;background:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;color:#888}
+.v-opt-btn:hover{border-color:#81c784;background:#f1f8e9}
+.v-opt-btn.sel-1{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;box-shadow:0 0 0 3px rgba(46,125,50,.15)}
+.v-opt-btn.sel-2{background:#f5f5f5;border-color:#9e9e9e;color:#444;box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+.v-opt-btn.sel-3{background:#fff3e0;border-color:#e65100;color:#e65100;box-shadow:0 0 0 3px rgba(230,81,0,.15)}
+
+/* SCORE */
+.score-panel{background:#fff;border:1px solid #dde1ea;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.score-row-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.score-row-item:last-child{border-bottom:none}
+.track{background:#e0e0e0;border-radius:99px;height:12px;position:relative;overflow:visible;margin:10px 0}
+.track-fill{height:12px;border-radius:99px;transition:width .5s;background:linear-gradient(to right,#2e7d32 0%,#f9a825 50%,#c62828 100%)}
+.needle{position:absolute;top:-5px;width:3px;height:22px;border-radius:2px;background:#1b5e20;transform:translateX(-50%);transition:left .5s;z-index:2}
+.track-labels{display:flex;justify-content:space-between;font-size:10px;color:#aaa;margin-top:4px}
+.verdict{padding:12px 16px;border-radius:8px;font-size:14px;font-weight:700;text-align:center;margin-top:12px}
+.verdict.direto{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.verdict.indireto{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
+.verdict.hibrido{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+
+/* CANAL */
+.canal-tipo-sel{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.canal-opt{flex:1;min-width:130px;border:1px solid #dde1ea;border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;text-align:center;font-size:13px;font-weight:600;color:#888;background:#fff;line-height:1.4}
+.canal-opt:hover{background:#f5f6fa}
+.canal-opt.sel-direto{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32}
+.canal-opt.sel-indireto{background:#fff3e0;border-color:#e65100;color:#e65100}
+.canal-opt.sel-hibrido{background:#e3f2fd;border-color:#1976d2;color:#0d47a1}
+.export-box{background:#fff;border:1px solid #dde1ea;border-radius:12px;padding:1.25rem;margin-top:1rem}
+.export-area{width:100%;font-size:11px;font-family:'Courier New',monospace;min-height:180px;border:1px solid #dde1ea;border-radius:8px;padding:10px;background:#fafafa;color:#111;line-height:1.6;resize:vertical}
+
+/* ========== PRINT ========== */
+@media print{
+  body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .app,.stepper{display:none!important}
+  .print-doc{display:block!important}
+  @page{size:A4;margin:1.5cm 1.5cm 2cm}
+}
+.print-doc{display:none}
+.pd{font-family:Arial,sans-serif;color:#000;background:#fff;font-size:10.5px;line-height:1.5}
+.pd-header{border-bottom:2.5px solid #2e7d32;padding-bottom:8px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end}
+.pd-titulo{font-size:13px;font-weight:700;text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;color:#2e7d32}
+.pd-box{border:1px solid #bbb;border-radius:4px;padding:8px 10px;margin-bottom:10px;page-break-inside:avoid}
+.pd-box-title{font-size:9px;font-weight:700;text-transform:uppercase;color:#2e7d32;margin-bottom:6px;letter-spacing:.04em;border-bottom:1px solid #ddd;padding-bottom:3px}
+.pd-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pd-field label{font-size:9px;font-weight:700;text-transform:uppercase;color:#888;display:block;margin-bottom:2px}
+.pd-field .val{font-size:10.5px;border-bottom:1px solid #ccc;padding-bottom:2px;min-height:16px;white-space:pre-wrap}
+.pd-table{width:100%;border-collapse:collapse;font-size:9.5px;margin-bottom:10px;page-break-inside:avoid}
+.pd-table th{background:#2e7d32;color:#fff;padding:5px 7px;text-align:left;font-size:9px}
+.pd-table td{border:1px solid #ccc;padding:5px 7px;vertical-align:top}
+.pd-table tr:nth-child(even) td{background:#f5fff5}
+.pd-verdict{padding:8px 12px;text-align:center;font-weight:700;font-size:12px;border-radius:4px;margin:8px 0}
+.pd-verdict.direto{background:#e8f5e9;color:#2e7d32;border:1px solid #2e7d32}
+.pd-verdict.indireto{background:#fff3e0;color:#e65100;border:1px solid #e65100}
+.pd-verdict.hibrido{background:#e3f2fd;color:#0d47a1;border:1px solid #0d47a1}
+.pd-page-break{page-break-before:always}
+.pd-track-outer{height:10px;background:#e0e0e0;border-radius:99px;margin:6px 0}
+.pd-track-fill{height:10px;border-radius:99px;background:linear-gradient(to right,#2e7d32,#f9a825,#c62828)}
+.pd-membros-table{width:100%;border-collapse:collapse;font-size:10px}
+.pd-membros-table th{background:#2e7d32;color:#fff;padding:4px 7px;font-size:9px}
+.pd-membros-table td{border:1px solid #ccc;padding:4px 7px}
+.pd-score-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-bottom:1px solid #f0f0f0;font-size:10px}
+.pd-footer{font-size:8px;color:#aaa;text-align:center;margin-top:16px;border-top:1px solid #eee;padding-top:6px}
+</style>
+</head>
+<body>
+
+<div class="app">
+<div class="header">
+  <div>
+    <h1>&#128230; Canais de Vendas — Versão Produto</h1>
+    <p>Desenho e Gestão Integrada de Canais de Vendas &nbsp;·&nbsp; Prof. José Luiz Meinberg</p>
+  </div>
+</div>
+
+<div class="stepper">
+  <button class="step-btn active" onclick="go(0)" id="stp0">&#128101; Grupo &amp; Produto</button>
+  <button class="step-btn" onclick="go(1)" id="stp1">Parte 1<br><span style="font-weight:400">Nível de Serviço</span></button>
+  <button class="step-btn" onclick="go(2)" id="stp2">Parte 2<br><span style="font-weight:400">Variáveis do Canal</span></button>
+  <button class="step-btn" onclick="go(3)" id="stp3">Parte 3<br><span style="font-weight:400">Canal Recomendado</span></button>
+  <button class="step-btn" onclick="go(4)" id="stp4">&#128438; Resultado &amp; Imprimir</button>
+</div>
+
+<!-- SEC 0: GRUPO + ESCOLHA DO PRODUTO -->
+<div class="section active" id="sec0">
+  <div class="card">
+    <div class="card-title">&#128101; Identificação do grupo</div>
+    <div class="col3">
+      <div class="field"><label>Turma</label><input type="text" id="turma" placeholder="Ex: GCOM 2025"></div>
+      <div class="field"><label>Cidade</label><input type="text" id="cidade" placeholder="Ex: Cuiabá"></div>
+      <div class="field"><label>Data</label><input type="text" id="data_aula" placeholder="Ex: 26/05/2026"></div>
+    </div>
+    <div class="sec-label">Participantes</div>
+    <div id="membros-container"></div>
+    <button class="btn-s" style="margin-top:8px;font-size:12px" onclick="addMembro()">+ Adicionar participante</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128230; Escolha do produto</div>
+    <div class="info-bar">O grupo deve ler a descrição dos quatro produtos abaixo, escolher um e marcar. É fundamental que o grupo entenda e considere a descrição do <strong>PERSONA</strong> e tenha em mente a <strong>ocasião específica</strong> de uso ou consumo.</div>
+    <div class="produtos-grid" id="produtos-grid"></div>
+    <div id="produto-selecionado-info" style="display:none"></div>
+  </div>
+  <div class="btn-nav"><button class="btn-p" onclick="go(1)">Próximo: Parte 1 &#8594;</button></div>
+</div>
+
+<!-- SEC 1 -->
+<div class="section" id="sec1">
+  <div class="info-bar"><strong>Parte 1 — Nível Esperado de Prestação de Serviço</strong><br>Considerando o PERSONA do produto escolhido, indique o nível de prestação de serviço esperado. Marque a coluna (1, 2 ou 3) e registre os insights de consequências e cuidados.</div>
+  <div id="produto-resumo-p1" style="margin-bottom:12px"></div>
+  <div id="p1-container"></div>
+  <div class="btn-nav">
+    <button class="btn-s" onclick="go(0)">&#8592; Voltar</button>
+    <button class="btn-p" onclick="go(2)">Próximo: Parte 2 &#8594;</button>
+  </div>
+</div>
+
+<!-- SEC 2 -->
+<div class="section" id="sec2">
+  <div class="info-bar"><strong>Parte 2 — Variáveis que afetam a estrutura do canal</strong><br>Marque 1, 2 ou 3 para cada variável. &nbsp;<strong style="color:#2e7d32">1 = tende a canal direto</strong> &nbsp;|&nbsp; <strong style="color:#666">2 = neutro</strong> &nbsp;|&nbsp; <strong style="color:#e65100">3 = tende a canal indireto</strong></div>
+  <div id="p2-container"></div>
+  <div id="score-live" style="margin-top:1rem"></div>
+  <div class="btn-nav">
+    <button class="btn-s" onclick="go(1)">&#8592; Voltar</button>
+    <button class="btn-p" onclick="go(3)">Próximo: Parte 3 &#8594;</button>
+  </div>
+</div>
+
+<!-- SEC 3 -->
+<div class="section" id="sec3">
+  <div id="score-mini" style="margin-bottom:1rem"></div>
+  <div class="card">
+    <div class="card-title">&#128739; Canal Recomendado — Parte 3</div>
+    <div class="sec-label">Selecione o tipo de canal</div>
+    <div class="canal-tipo-sel">
+      <div class="canal-opt" onclick="selCanal('direto')" id="co-direto">&#8594; Canal Direto<br><span style="font-size:10px;font-weight:400">sem intermediários</span></div>
+      <div class="canal-opt" onclick="selCanal('indireto')" id="co-indireto">&#8596; Canal Indireto<br><span style="font-size:10px;font-weight:400">com intermediários</span></div>
+      <div class="canal-opt" onclick="selCanal('hibrido')" id="co-hibrido">&#8644; Canal Híbrido<br><span style="font-size:10px;font-weight:400">multicanal</span></div>
+    </div>
+    <div class="field"><label>Descrição detalhada do canal proposto <span style="font-weight:400;color:#aaa">(quanto mais detalhado, melhor a avaliação)</span></label><textarea id="canal_desc" rows="5" placeholder="Se direto: como será a logística de distribuição.&#10;Se indireto: quem serão os intermediários e como será tratada a logística.&#10;Se híbrido: descreva cada modalidade..."></textarea></div>
+    <div class="field"><label>Justificativa</label><textarea id="canal_just" rows="4" placeholder="Por que o grupo recomenda este canal? Relacione com as variáveis analisadas nas partes 1 e 2..."></textarea></div>
+    <div class="field"><label>Cuidados e restrições — Teoria das Restrições</label><textarea id="canal_rest" rows="4" placeholder="Identifique a principal restrição técnica e descreva como o grupo a mitigará antes de colocar o canal em operação..."></textarea></div>
+  </div>
+  <div class="btn-nav">
+    <button class="btn-s" onclick="go(2)">&#8592; Voltar</button>
+    <button class="btn-p" onclick="go(4)">Ver resultado e imprimir &#8594;</button>
+  </div>
+</div>
+
+<!-- SEC 4 -->
+<div class="section" id="sec4">
+  <div id="resultado-panel"></div>
+  <div class="export-box">
+    <div style="font-size:15px;font-weight:700;color:#1b5e20;margin-bottom:6px">&#128438; Exportar trabalho do grupo</div>
+    <p style="font-size:12px;color:#666;margin-bottom:14px">Escolha como deseja entregar o trabalho:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-green" onclick="imprimirRelatorio()">&#128424; Imprimir / Salvar como PDF</button>
+      <button class="btn-orange" onclick="gerarExport()">&#128203; Gerar texto (e-mail / WhatsApp)</button>
+    </div>
+    <div id="export-wrap" style="display:none;margin-top:14px">
+      <label style="font-size:12px;color:#555;margin-bottom:4px;display:block">Selecione tudo e copie (Ctrl+A → Ctrl+C):</label>
+      <textarea class="export-area" id="export-area" readonly></textarea>
+      <button onclick="copiarExport()" style="margin-top:8px;font-size:12px;padding:7px 14px;border:1px solid #ccc;border-radius:8px;background:#fff;cursor:pointer">&#128203; Copiar texto</button>
+    </div>
+  </div>
+  <div class="btn-nav"><button class="btn-s" onclick="go(3)">&#8592; Voltar</button></div>
+</div>
+</div>
+
+<div class="print-doc" id="print-doc"></div>
+
+<script>
+var PRODUTOS = [
+  {
+    id:'iogurte',
+    titulo:'Produto 1 — Iogurte',
+    nome:'Iogurte Natural Integral · Nestlé · 170g · Copo multicamadas',
+    emoji:'&#127851;',
+    persona:'Maria',
+    resumo:'Maria é mãe do Gabriel (9 anos) e Anna (7 anos). Ela e o companheiro José têm grande preocupação com o que consomem e oferecem aos filhos. O iogurte faz parte da refeição matinal misturado com frutas ou cereais. Maria gerencia as compras da casa, faz compras periódicas e usa o carro para deslocamento. Maria está preparando uma nova compra para sua casa.',
+    papel:'Avaliador + Decisor + Usuário'
+  },
+  {
+    id:'tv',
+    titulo:'Produto 2 — TV Grande 75"',
+    nome:'Smart TV 75" Crystal UHD 4K · Samsung · Caixa papelão ondulado reforçado · L180×A125×P45cm · ~50kg',
+    emoji:'&#128250;',
+    persona:'Bernardo e Luciana',
+    resumo:'Bernardo e Luciana são um jovem casal sem filhos com hábito de assistir séries. Luciana prefere séries históricas e filmes românticos; Bernardo, séries de ação e games. Bernardo é fanático por games de ação/futebol e joga online com amigos. Trabalham em regime híbrido e têm um cômodo preparado para home office. Bernardo e Luciana desejam trocar sua televisão.',
+    papel:'Avaliador + Decisor + Usuário'
+  },
+  {
+    id:'notebook',
+    titulo:'Produto 3 — Notebook',
+    nome:'Notebook 13 · Inspiron Ultrafino 2x1 · Dell · Caixa de papelão ondulado reforçado',
+    emoji:'&#128187;',
+    persona:'Guilherme',
+    resumo:'Guilherme é consultor de empresas focado em melhorias de processos comerciais e treinamento de equipes de vendas. Precisa tratar dados numéricos e pegadas digitais para apresentar conclusões estratégicas. Prepara apresentações em PowerPoint com uso intenso de imagens. A rapidez computacional faz parte do seu diferencial competitivo. Guilherme está precisando de um novo notebook.',
+    papel:'Avaliador + Decisor + Usuário'
+  },
+  {
+    id:'cerveja',
+    titulo:'Produto 4 — Cerveja',
+    nome:'Heineken Lager Beer · Heineken · Garrafa Long Neck · 330ml',
+    emoji:'&#127867;',
+    persona:'Gabriel',
+    resumo:'Gabriel é muito social e promove encontros com amigos em bar ou em casa. É um bom churrasqueiro e às vezes promove churrascos entre conhecidos. Faz MBA e costuma convidar colegas ao final da aula para um bate papo em sua casa. Muitas vezes o convite é de última hora e ele não está prevenido com produtos. Gabriel intempestivamente acaba de convidar 10 alunos para sua casa e não tem estoque de cervejas.',
+    papel:'Avaliador + Decisor + Usuário'
+  }
+];
+
+var P1_VARS = [
+  {id:'vol',nome:'Volume (quantidade)',
+   pergunta:'Quando compra, qual o volume (quantidade) comprado por vez de compra? Em teoria PEDIDOS GRANDES (em unidades) podem ser distribuídos diretamente. Caso o produto seja comprado pouco por vez mas com valor elevado, destaque "valor elevado da compra" nos insights.',
+   desc:'Implica no tamanho do pedido por vez de compra. Pedidos grandes podem ser distribuídos diretamente. Pedidos pequenos impossibilitam esta entrega direta — será necessário formar pacote com outros itens.',
+   c1:'Pedido grande',c3:'Pedido pequeno',
+   insight:'Indique as atividades ou preocupações que o canal deve ter em função do VOLUME'},
+  {id:'dist',nome:'Distância (alocação espacial)',
+   pergunta:'Qual a distância confortável para o cliente final realizar a compra? A que distância deve estar o estoque para atender a urgência do usuário?',
+   desc:'Implica na localização do produto na distância adequada (tempo e lugar) para atender quem compra. Decisões quanto à intensidade da distribuição, uso de intermediários e localização do estoque no sistema.',
+   c1:'Pouca distância / Estoque deve estar perto',c3:'Muita distância / Estoque pode estar longe',
+   insight:'Indique as atividades ou preocupações que o canal deve ter em função da DISTÂNCIA'},
+  {id:'per',nome:'Periodicidade',
+   pergunta:'Quando compra, de quanto em quanto tempo compra?',
+   desc:'Implica na intensidade da visitação (vender) e consequente entrega. Decisões quanto ao uso de equipe própria, representantes ou atacadistas/distribuidores e localização do estoque no sistema.',
+   c1:'Poucas vezes num período',c3:'Muitas vezes num período',
+   insight:'Indique as atividades ou preocupações que o canal deve ter em função da PERIODICIDADE'},
+  {id:'var2',nome:'Variedade',
+   pergunta:'Quando compra, compra o que também?',
+   desc:'Implica na variedade comprada e local de compra (especialidade ou multisegmento). Implica também na necessidade da equipe de vendas específica ou genérica, processo logístico e pós-vendas.',
+   c1:'Compras específicas',c3:'Compra outros produtos',
+   insight:'Indique as atividades ou preocupações que o canal deve ter em função da VARIEDADE'},
+];
+
+var P2_GRUPOS = [
+  {nome:'Variáveis do Produto',vars:[
+    {id:'vol2',nome:'Volume físico (uma unidade)',
+     desc:'Impacta custos logísticos. Maior volume indica maior custo. Quando ocorre, recomenda-se menor número de movimentação.',
+     c1:'Grande',c3:'Pequeno',
+     desc1:'O volume do produto é alto, dificultando a movimentação física pelo usuário e necessitando mais que um simples equipamento de movimentação.',
+     desc3:'O volume do produto é baixo, não colocando qualquer dificuldade para a movimentação física pelo usuário.'},
+    {id:'peso',nome:'Peso físico (uma unidade)',
+     desc:'Impacta custos logísticos. Maior peso, maior custo. Quando ocorre, recomenda-se menor número de movimentação.',
+     c1:'Alto',c3:'Baixo',
+     desc1:'O peso do produto é alto, dificultando a movimentação física pelo usuário e necessitando mais que um simples equipamento.',
+     desc3:'O peso do produto é baixo, não colocando qualquer dificuldade para a movimentação física pelo usuário.'},
+    {id:'per2',nome:'Perecibilidade',
+     desc:'Impacta na velocidade que o produto deve chegar ao usuário final. Quanto mais perecível, maior rapidez deve ser a movimentação.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'O produto tem vida útil de até 30 dias.',
+     desc3:'O produto tem vida útil maior que 180 dias.'},
+    {id:'pad',nome:'Padronização do produto',
+     desc:'Impacta na perfeita interpretação das necessidades do usuário final nas especificações do produto.',
+     c1:'Não padronizado',c3:'Padronizado',
+     desc1:'O produto só é produzido com características definidas pelo consumidor.',
+     desc3:'O consumidor compra o produto como ele é.'},
+    {id:'prod',nome:'Produto (política de produção)',
+     desc:'Impacta no momento da produção e existência ou não de estoque e consequente rapidez de entrega ao usuário final.',
+     c1:'Contra pedido',c3:'Para estoque',
+     desc1:'O produto é produzido contra pedido.',
+     desc3:'O produto é produzido para estoque.'},
+    {id:'cv',nome:'Estágio no Ciclo de Vida',
+     desc:'Impactam o conhecer os atributos do produto e saber usar adequadamente. Trata da maturidade da compra e melhor utilização pelo usuário final.',
+     c1:'Novo',c3:'Estabelecido',
+     desc1:'O produto é totalmente novo.',
+     desc3:'É um produto na fase da maturidade.'},
+    {id:'tec',nome:'Tecnologia de utilização',
+     desc:'Impacta na maturidade da compra e utilização pelo usuário final, além da sua capacidade técnica para avaliar a compra.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'É um produto que requer cuidados especiais para instalação além de acompanhamento técnico pessoal.',
+     desc3:'É um produto que não requer cuidados especiais para instalação.'},
+    {id:'pu',nome:'Preço Unitário',
+     desc:'Impacta a capacidade de custear o processo de vender, entregar e financiar o produto vendido. Relação direta com o valor do pedido mínimo.',
+     c1:'Alto',c3:'Baixo',
+     desc1:'O preço unitário de venda cobre os custos suficientes para financiar a venda e entrega do produto direta ao consumidor com lucro.',
+     desc3:'O preço unitário não cobre os custos de venda, entrega e financiamento do produto direto ao consumidor.'},
+  ]},
+  {nome:'Variáveis de Mercado',vars:[
+    {id:'ag',nome:'Área Geográfica',
+     desc:'Quanto mais dispersa, maior o custo do atendimento com os processos de vender, entregar e financiar.',
+     c1:'Concentrada',c3:'Dispersa',
+     desc1:'O consumo do mercado é altamente concentrado.',
+     desc3:'O consumo de mercado é altamente disperso.'},
+    {id:'tm',nome:'Tamanho do Mercado (volume)',
+     desc:'Quanto maior for o tamanho do mercado a atender, maior será o esforço (não confundir com densidade).',
+     c1:'Pequeno',c3:'Grande',
+     desc1:'O volume de consumo do mercado é muito baixo.',
+     desc3:'O volume de consumo do mercado é muito grande.'},
+    {id:'dm',nome:'Densidade do Mercado',
+     desc:'Quanto maior for a densidade, maior o número de usuários finais e menor o custo por usuário para vender e entregar.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'Existe muito consumo por área do mercado.',
+     desc3:'Existe pouco consumo por área do mercado.'},
+    {id:'nc',nome:'Número de Clientes',
+     desc:'Quanto maior o número de clientes a atender, maior será o custo (não confundir com densidade).',
+     c1:'Poucos',c3:'Muitos',
+     desc1:'Existem poucos consumidores por área do mercado.',
+     desc3:'Existem muitos consumidores por área do mercado.'},
+  ]},
+  {nome:'Comportamento de Compra',vars:[
+    {id:'tp',nome:'Tamanho do Pedido',
+     desc:'Quando pedido pequeno por vez de compra precisará ser vendido, entregue e financiado junto com outros produtos até formar um "pedido" rentável.',
+     c1:'Grande',c3:'Pequeno',
+     desc1:'O consumidor compra um grande volume do produto por vez de compra.',
+     desc3:'O consumidor compra um pequeno volume do produto por vez de compra.'},
+    {id:'fc',nome:'Frequência de Compra',
+     desc:'Se for necessário atender o usuário final muitas vezes em determinado período, o custo será alto.',
+     c1:'Baixa',c3:'Alta',
+     desc1:'O consumidor compra raramente o produto.',
+     desc3:'O consumidor faz compras semanais.'},
+    {id:'sc',nome:'Significado da Compra',
+     desc:'Produto com alto significado de compra necessita de argumentação sólida. Equipe própria terá maiores condições de argumentação.',
+     c1:'Alto',c3:'Baixo',
+     desc1:'O consumidor faz compra refletida e leva em consideração em profundidade a oferta, o preço, a referência e principalmente o benefício emocional da compra.',
+     desc3:'O consumidor compra por impulso.'},
+    {id:'pdc',nome:'Participantes da Decisão de Compra',
+     desc:'Impacta o custo de uma visita ao usuário final pelo tempo e pelo número de pessoas a visitar e convencer.',
+     c1:'Muitos',c3:'Poucos',
+     desc1:'São muitos os participantes da decisão de compra (avaliador, decisor, comprador e usuário).',
+     desc3:'Só uma pessoa participa na decisão de compra.'},
+    {id:'nn',nome:'Necessidade de Negociação',
+     desc:'Impacta o preparo do profissional de vendas, o tempo e o custo de cada visita ao usuário final.',
+     c1:'Necessária',c3:'Não necessária',
+     desc1:'O consumidor negocia cada item da oferta de venda.',
+     desc3:'O consumidor não sente necessidade em negociar a compra do produto.'},
+    {id:'cped',nome:'Ciclo do Pedido',
+     desc:'Quanto maior for este tempo (lead time), menos atrativo será para intermediários.',
+     c1:'Longo',c3:'Curto (comprou, levou)',
+     desc1:'O ciclo do pedido é muito longo.',
+     desc3:'O ciclo do pedido é altamente curto (comprou, levou).'},
+    {id:'exp',nome:'Expedição',
+     desc:'Quanto mais rápida deverá ser a entrega, mais próximo o produto deverá estar do usuário.',
+     c1:'Retardada',c3:'Imediata',
+     desc1:'A expedição vai esperar a disponibilidade de estoque para a entrega.',
+     desc3:'A expedição é imediata a partir do ponto da compra.'},
+    {id:'pref',nome:'Preferência do Cliente',
+     desc:'Alguns preferem ser atendidos diretamente pelo fabricante. Outros preferem o revendedor local.',
+     c1:'Compra Direta',c3:'Revendedor Local',
+     desc1:'O consumidor exige a presença do fabricante no processo de compra.',
+     desc3:'O consumidor não exige a presença do fabricante no processo da compra.'},
+  ]},
+  {nome:'Processo da Venda',vars:[
+    {id:'dlc',nome:'Distância do Local de Compra',
+     desc:'Impacta a disponibilidade do produto ao usuário final, custo de atendimento e a rapidez.',
+     c1:'Pode ser longe',c3:'Deve ser perto',
+     desc1:'O consumidor não se importa em cobrir grandes distâncias para comprar o produto.',
+     desc3:'O consumidor deseja ter o mínimo de locomoção para comprar o produto.'},
+    {id:'iv',nome:'Instalações para a Venda',
+     desc:'Impacta a ambiência onde o produto é vendido (muitas vezes entregue).',
+     c1:'Especiais',c3:'Rotineiras',
+     desc1:'O local para a exposição e venda deve ser especialmente preparado para comercialização do produto.',
+     desc3:'Não é importante o local para exposição e venda ao consumidor.'},
+    {id:'efv',nome:'Especialização da Força de Vendas',
+     desc:'Impacta o preparo e especialização da força de vendas (e o custo).',
+     c1:'Alta',c3:'Baixa',
+     desc1:'A equipe de vendas é especializada no assunto do produto e do usuário.',
+     desc3:'Não há qualquer tipo de especialização requerida para a força de venda.'},
+    {id:'tav',nome:'Tecnologia de Apoio a Vendas',
+     desc:'Impacta a necessidade de tecnologia de apoio à venda (demonstração, cálculos, desenhos técnicos, etc.).',
+     c1:'Alta',c3:'Baixa',
+     desc1:'A venda é altamente complexa requerendo alta intervenção de tecnologia de apoio à venda.',
+     desc3:'A venda é altamente simples, não requerendo qualquer tipo de tecnologia para apoio à venda.'},
+    {id:'pv',nome:'Pós-Vendas (Serviços)',
+     desc:'Impacta a necessidade de prestação de serviço de pós-venda ao usuário final e seu custo.',
+     c1:'Alto',c3:'Baixo',
+     desc1:'É necessário acompanhamento meticuloso de pós-venda e início de uso do produto junto ao consumidor.',
+     desc3:'Não é necessário qualquer tipo de atividade de pós-venda. Não é esperado pelo comprador.'},
+  ]},
+  {nome:'Variáveis da Empresa',vars:[
+    {id:'cf',nome:'Capacidade Financeira',
+     desc:'Indica a capacidade da empresa em assumir um processo direto ao usuário final.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'A empresa dispõe de capital suficiente para financiar equipe de vendas e entrega direta ao consumidor.',
+     desc3:'A empresa não dispõe de capital suficiente para financiar equipe de vendas e entrega direta ao consumidor.'},
+    {id:'eg',nome:'Experiência Gerencial',
+     desc:'Indica a capacidade da empresa em administrar adequadamente todo o processo. Relacionado com a maturidade da empresa.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'A empresa é estabelecida e tem o corpo gerencial altamente experiente (no mercado e profissional).',
+     desc3:'A empresa é nova e o corpo gerencial tem pouca experiência (no mercado e profissional).'},
+    {id:'dc',nome:'Desejo de Controle',
+     desc:'Variável relacionada com a política da empresa e seu posicionamento com e no mercado.',
+     c1:'Alto',c3:'Baixo',
+     desc1:'A empresa deseja efetivamente controlar os movimentos de seu produto até chegar ao consumidor e obter informação de uso.',
+     desc3:'A empresa não tem qualquer interesse em controlar os movimentos de seu produto até chegar ao consumidor.'},
+    {id:'cr',nome:'Capacidade de Reação',
+     desc:'Agilidade em reagir a mudanças de mercado — variável competitiva importante.',
+     c1:'Alta',c3:'Baixa',
+     desc1:'A empresa tem facilidade em reagir rapidamente com mudanças de mercado.',
+     desc3:'A empresa tem dificuldade em reagir em função de mudanças de mercado.'},
+  ]},
+];
+
+var membros=[{nome:'',turma:''},{nome:'',turma:''},{nome:'',turma:''},{nome:'',turma:''},{nome:'',turma:''},{nome:'',turma:''}];
+var p1Sels={},p2Sels={},canalTipo='',currentSec=0,produtoSel=null;
+
+function go(n){
+  document.querySelectorAll('.section').forEach(function(s,i){s.classList.toggle('active',i===n);});
+  document.querySelectorAll('.step-btn').forEach(function(b,i){b.classList.remove('active','done');if(i===n)b.classList.add('active');else if(i<n)b.classList.add('done');});
+  currentSec=n;
+  if(n===1)renderProdutoResumop1();
+  if(n===2)renderScoreLive();
+  if(n===3)renderScoreMini();
+  if(n===4)renderResultado();
+  window.scrollTo(0,0);
+}
+
+function addMembro(){membros.push({nome:'',turma:''});renderMembros();}
+function removeMembro(i){membros.splice(i,1);renderMembros();}
+function renderMembros(){
+  var c=document.getElementById('membros-container');
+  c.innerHTML=membros.map(function(m,i){return '<div class="membro-row"><span class="membro-num">'+(i+1)+'.</span><input type="text" placeholder="Nome completo" value="'+m.nome+'" oninput="membros['+i+'].nome=this.value" style="flex:3"><input type="text" placeholder="Turma" value="'+m.turma+'" oninput="membros['+i+'].turma=this.value" style="flex:1;min-width:70px"><button class="rm-btn" onclick="removeMembro('+i+')">×</button></div>';}).join('');
+}
+
+function renderProdutos(){
+  var g=document.getElementById('produtos-grid');
+  g.innerHTML=PRODUTOS.map(function(p){
+    var sel=produtoSel&&produtoSel.id===p.id;
+    return '<div class="produto-card'+(sel?' selecionado':'')+'" id="pc_'+p.id+'" onclick="selecionarProduto(\''+p.id+'\')">'
+      +'<h4>'+p.emoji+' '+p.titulo+'</h4>'
+      +'<div class="prod-nome">'+p.nome+'</div>'
+      +'<div class="persona-resumo"><strong>Persona: '+p.persona+'</strong><br>'+p.resumo+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function selecionarProduto(id){
+  produtoSel=PRODUTOS.find(function(p){return p.id===id;});
+  PRODUTOS.forEach(function(p){
+    var el=document.getElementById('pc_'+p.id);
+    if(el)el.className='produto-card'+(p.id===id?' selecionado':'');
+  });
+  var info=document.getElementById('produto-selecionado-info');
+  info.style.display='block';
+  info.innerHTML='<div class="produto-selecionado-info">&#10003; <strong>Produto selecionado:</strong> '+produtoSel.titulo+' &nbsp;|&nbsp; Persona: <strong>'+produtoSel.persona+'</strong></div>';
+}
+
+function renderProdutoResumop1(){
+  var el=document.getElementById('produto-resumo-p1');
+  if(!el)return;
+  if(produtoSel){
+    el.innerHTML='<div class="produto-selecionado-info"><strong>'+produtoSel.emoji+' '+produtoSel.titulo+'</strong><br><span style="font-size:11px">'+produtoSel.nome+'</span><br><span style="font-size:11px;margin-top:4px;display:block"><strong>Persona '+produtoSel.persona+':</strong> '+produtoSel.resumo+'</span></div>';
+  } else {
+    el.innerHTML='<div class="info-bar">&#9888; Nenhum produto selecionado. Volte à etapa anterior e escolha um produto.</div>';
+  }
+}
+
+function renderP1(){
+  var c=document.getElementById('p1-container');
+  c.innerHTML=P1_VARS.map(function(v){
+    var opts=[1,2,3].map(function(n){return '<div class="opcao'+(p1Sels[v.id]===n?' sel-'+n:'')+'" id="p1o_'+v.id+'_'+n+'" onclick="selP1(\''+v.id+'\','+n+')"><span class="opcao-num">'+n+'</span><span class="opcao-label">'+(n===1?v.c1:n===3?v.c3:'—')+'</span></div>';}).join('');
+    return '<div class="p1-var"><div class="p1-head"><h3>'+v.nome+'</h3><p>'+v.desc+'</p></div><div class="p1-body"><div class="p1-pergunta">'+v.pergunta+'</div><div class="opcoes-row">'+opts+'</div><div class="insight-box"><label>'+v.insight+'</label><textarea id="ins_'+v.id+'" rows="2" placeholder="Descreva as atividades ou preocupações que o canal deve ter... (Amplie o espaço caso necessário)"></textarea></div></div></div>';
+  }).join('');
+}
+
+function selP1(id,n){
+  p1Sels[id]=n;
+  [1,2,3].forEach(function(x){var el=document.getElementById('p1o_'+id+'_'+x);if(el)el.className='opcao'+(x===n?' sel-'+n:'');});
+}
+
+function renderP2(){
+  var c=document.getElementById('p2-container');
+  c.innerHTML=P2_GRUPOS.map(function(g,gi){
+    var rows=g.vars.map(function(v){
+      var s=p2Sels[v.id];
+      return '<div class="var-row">'
+        +'<div class="vcell nome"><strong>'+v.nome+'</strong></div>'
+        +'<div class="vcell desc" style="font-size:11px;color:#555;line-height:1.5;border-right:1px solid #eee;padding:9px 10px;display:flex;align-items:center">'+v.desc+'</div>'
+        +'<div class="vcell opt1">'
+          +'<span class="opt-label-top direto">'+v.c1+'</span>'
+          +'<button class="v-opt-btn'+(s===1?' sel-1':'')+'" id="p2o_'+v.id+'_1" onclick="selP2(\''+v.id+'\',1,\''+gi+'\')">1</button>'
+          +'<span class="opt-desc d1">'+v.desc1+'</span>'
+        +'</div>'
+        +'<div class="vcell opt2">'
+          +'<span style="font-size:10px;color:#aaa;margin-bottom:4px">—</span>'
+          +'<button class="v-opt-btn'+(s===2?' sel-2':'')+'" id="p2o_'+v.id+'_2" onclick="selP2(\''+v.id+'\',2,\''+gi+'\')">2</button>'
+        +'</div>'
+        +'<div class="vcell opt3">'
+          +'<span class="opt-label-top indireto">'+v.c3+'</span>'
+          +'<button class="v-opt-btn'+(s===3?' sel-3':'')+'" id="p2o_'+v.id+'_3" onclick="selP2(\''+v.id+'\',3,\''+gi+'\')">3</button>'
+          +'<span class="opt-desc d3">'+v.desc3+'</span>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+    return '<div class="grupo-box"><div class="grupo-head"><h3>'+g.nome+' ('+g.vars.length+' variáveis)</h3><span class="grupo-score-badge" id="gscore_'+gi+'">0 pts</span></div>'
+      +'<div class="var-rows">'
+      +'<div class="var-hrow">'
+        +'<div class="vh">Variável</div>'
+        +'<div class="vh">Descrição / Impacto</div>'
+        +'<div class="vh opt" style="color:#2e7d32;background:#e8f5e9">Coluna 1<br><span style="font-size:9px;font-weight:400">Canal Direto</span></div>'
+        +'<div class="vh opt">Coluna 2<br><span style="font-size:9px;font-weight:400">Neutro</span></div>'
+        +'<div class="vh opt" style="color:#e65100;background:#fff3e0">Coluna 3<br><span style="font-size:9px;font-weight:400">Canal Indireto</span></div>'
+      +'</div>'
+      +rows+'</div></div>';
+  }).join('');
+  updateGroupScores();
+}
+
+function selP2(id,n,gi){
+  p2Sels[id]=n;
+  P2_GRUPOS[parseInt(gi)].vars.forEach(function(v){[1,2,3].forEach(function(x){var el=document.getElementById('p2o_'+v.id+'_'+x);if(el)el.className='v-opt-btn'+(p2Sels[v.id]===x?' sel-'+x:'');});});
+  updateGroupScores();
+  if(currentSec===2)renderScoreLive();
+  if(currentSec===3)renderScoreMini();
+}
+
+var TOTAL_VARS=29;
+function getTotal(){var t=0;P2_GRUPOS.forEach(function(g){g.vars.forEach(function(v){if(p2Sels[v.id])t+=p2Sels[v.id];});});return t;}
+function getGT(gi){var t=0;P2_GRUPOS[gi].vars.forEach(function(v){if(p2Sels[v.id])t+=p2Sels[v.id];});return t;}
+function updateGroupScores(){P2_GRUPOS.forEach(function(g,gi){var el=document.getElementById('gscore_'+gi);if(el)el.textContent=getGT(gi)+' pts';});}
+
+function getVerdict(total){
+  if(!total)return{cls:'',txt:'Preencha as variáveis para ver a indicação'};
+  if(total<58)return{cls:'direto',txt:'→ Canal direto — produto com mais características para canal direto'};
+  if(total>=58)return{cls:'indireto',txt:'→ Canal indireto — produto com mais características para canal indireto'};
+  return{cls:'hibrido',txt:'⇄ Canal híbrido (multicanal)'};
+}
+
+function scoreHTML(total,mini){
+  var mn=TOTAL_VARS,mx=TOTAL_VARS*3,mid=58;
+  var pct=total>0?Math.round((total-mn)/(mx-mn)*100):0;
+  var v=getVerdict(total);
+  var rows=mini?'':P2_GRUPOS.map(function(g,gi){return '<div class="score-row-item"><span>'+g.nome+' ('+g.vars.length+' var.)</span><span style="font-weight:700">'+getGT(gi)+' / '+(g.vars.length*3)+'</span></div>';}).join('');
+  return '<div class="score-panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:'+(mini?8:14)+'px"><span style="font-size:'+(mini?13:14)+'px;font-weight:600;color:#1b5e20">Pontuação total — '+TOTAL_VARS+' variáveis</span><span style="font-size:'+(mini?22:28)+'px;font-weight:700;color:#1b5e20">'+total+'<span style="font-size:12px;color:#aaa"> / '+mx+'</span></span></div>'+rows+'<div class="track"><div class="track-fill" style="width:'+Math.max(1,Math.min(99,pct))+'%"></div><div class="needle" style="left:'+Math.round((mid-mn)/(mx-mn)*100)+'%"></div></div><div class="track-labels"><span>'+mn+' — direto</span><span>'+mid+' — ponto de corte</span><span>'+mx+' — indireto</span></div>'+(v.cls?'<div class="verdict '+v.cls+'">'+v.txt+'</div>':'')+'<p style="font-size:10px;color:#aaa;text-align:center;margin-top:6px">29 variáveis · mínimo 29 · máximo 87 · ponto de corte: 58 (≥58 = indireto · &lt;58 = direto)</p></div>';
+}
+
+function renderScoreLive(){var el=document.getElementById('score-live');if(el)el.innerHTML=scoreHTML(getTotal(),true);}
+function renderScoreMini(){var el=document.getElementById('score-mini');if(el)el.innerHTML=scoreHTML(getTotal(),true);}
+
+function renderResultado(){
+  var el=document.getElementById('resultado-panel');
+  var total=getTotal(),v=getVerdict(total);
+  var nomes={direto:'Canal Direto (sem intermediários)',indireto:'Canal Indireto (com intermediários)',hibrido:'Canal Híbrido (multicanal)'};
+  var desc=(document.getElementById('canal_desc')||{}).value||'';
+  el.innerHTML=scoreHTML(total,false)+'<div class="card"><div class="card-title">&#128739; Canal recomendado pelo grupo</div><div style="font-size:16px;font-weight:700;color:#1b5e20">'+(canalTipo?nomes[canalTipo]:'— Não selecionado —')+'</div>'+(desc?'<p style="font-size:13px;margin-top:8px;color:#555;line-height:1.6">'+desc.substring(0,240)+(desc.length>240?'…':'')+'</p>':'')+'</div>';
+}
+
+function selCanal(tipo){
+  canalTipo=tipo;
+  ['direto','indireto','hibrido'].forEach(function(t){var el=document.getElementById('co-'+t);if(el)el.className='canal-opt'+(t===tipo?' sel-'+t:'');});
+}
+
+function imprimirRelatorio(){
+  var total=getTotal();
+  var mn=TOTAL_VARS,mx=TOTAL_VARS*3,mid=58;
+  var pct=total>0?Math.round((total-mn)/(mx-mn)*100):0;
+  var v=getVerdict(total);
+  var turma=document.getElementById('turma').value||'—';
+  var cidade=document.getElementById('cidade').value||'—';
+  var data=document.getElementById('data_aula').value||'—';
+  var canalDesc=document.getElementById('canal_desc').value||'—';
+  var canalJust=document.getElementById('canal_just').value||'—';
+  var canalRest=document.getElementById('canal_rest').value||'—';
+  var canalNomes={direto:'Canal Direto (sem intermediários)',indireto:'Canal Indireto (com intermediários)',hibrido:'Canal Híbrido (multicanal)'};
+  var membrosAtivos=membros.filter(function(m){return m.nome.trim();});
+  var prodNome=produtoSel?produtoSel.titulo:'—';
+  var prodInfo=produtoSel?produtoSel.nome:'—';
+  var personaNome=produtoSel?produtoSel.persona:'—';
+  var personaDesc=produtoSel?produtoSel.resumo:'—';
+
+  var p1Rows=P1_VARS.map(function(v){
+    var sel=p1Sels[v.id];
+    var insEl=document.getElementById('ins_'+v.id);
+    var ins=insEl?insEl.value:'';
+    var lbl=sel===1?v.c1:sel===3?v.c3:sel===2?'—':'Não respondido';
+    return '<tr><td style="font-weight:600;width:16%">'+v.nome+'</td><td style="font-size:9px;width:28%">'+v.pergunta.substring(0,120)+'</td><td style="text-align:center;font-weight:700;width:6%;background:'+(sel===1?'#e8f5e9':sel===3?'#fff3e0':sel===2?'#f5f5f5':'')+'">'+( sel||'—')+'</td><td style="width:16%;font-size:9.5px">'+lbl+'</td><td style="font-size:9px;font-style:italic;color:#555">'+ins+'</td></tr>';
+  }).join('');
+
+  var p2Secs=P2_GRUPOS.map(function(g,gi){
+    var gt=getGT(gi);
+    var rows=g.vars.map(function(v){
+      var sel=p2Sels[v.id];
+      var lbl=sel===1?'<span style="color:#2e7d32;font-weight:700">→ Direto<br><span style="font-size:8px;font-weight:400">'+v.c1+'</span></span>':sel===3?'<span style="color:#e65100;font-weight:700">→ Indireto<br><span style="font-size:8px;font-weight:400">'+v.c3+'</span></span>':sel===2?'Neutro':'—';
+      return '<tr><td style="font-weight:600;width:18%">'+v.nome+'</td><td style="font-size:8.5px;width:24%;color:#444">'+v.desc+'</td><td style="font-size:8px;width:20%;color:#2e7d32;background:#f5fff5">&#9312; '+v.desc1+'</td><td style="font-size:8px;width:20%;color:#e65100;background:#fffaf5">&#9314; '+v.desc3+'</td><td style="text-align:center;font-weight:700;width:6%;background:'+(sel===1?'#e8f5e9':sel===3?'#fff3e0':sel===2?'#f5f5f5':'')+'">'+( sel||'—')+'</td><td style="font-size:9px;width:12%">'+lbl+'</td></tr>';
+    }).join('');
+    return '<div style="margin-bottom:12px;page-break-inside:avoid"><div style="background:#2e7d32;color:#fff;padding:5px 8px;font-size:10px;font-weight:700;border-radius:4px 4px 0 0">'+g.nome+' ('+g.vars.length+' variáveis) — '+gt+' / '+(g.vars.length*3)+' pontos</div><table class="pd-table" style="margin:0"><thead><tr><th style="width:18%">Variável</th><th style="width:24%">Descrição</th><th style="width:20%">&#9312; Coluna 1 (direto)</th><th style="width:20%">&#9314; Coluna 3 (indireto)</th><th style="width:6%;text-align:center">Col.</th><th style="width:12%">Indicação</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }).join('');
+
+  var html='<div class="pd">'
+    +'<div class="pd-header"><div><div style="font-size:14px;font-weight:700;color:#2e7d32">Desenho e Gestão Integrada de Canais de Vendas</div><div style="font-size:9px;color:#888;margin-top:2px">Versão Produto &nbsp;·&nbsp; Prof. José Luiz Meinberg</div></div><div style="text-align:right;font-size:9px;color:#888">'+cidade+' · '+data+'</div></div>'
+    +'<div class="pd-titulo">Trabalho em Grupo — Canais de Vendas — Versão Produto</div>'
+    +'<div class="pd-grid2">'
+    +'<div class="pd-box"><div class="pd-box-title">Identificação do grupo</div><div class="pd-grid2" style="margin-bottom:0"><div class="pd-field"><label>Turma</label><div class="val">'+turma+'</div></div><div class="pd-field"><label>Data</label><div class="val">'+data+'</div></div><div class="pd-field"><label>Cidade</label><div class="val">'+cidade+'</div></div></div></div>'
+    +'<div style="border:2px solid #2e7d32;border-radius:4px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px"><div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#2e7d32">Nota do grupo</div><div style="font-size:8px;color:#888;margin-top:4px">A ser preenchida pelo professor</div></div><div><div style="font-size:24px;font-weight:800;color:#2e7d32;border-bottom:2px solid #2e7d32;min-width:60px;text-align:center">&nbsp;&nbsp;&nbsp;</div><div style="font-size:8px;color:#aaa;margin-top:4px;text-align:center">Prof. José Luiz Meinberg</div></div></div>'
+    +'</div>'
+    +'<div class="pd-box"><div class="pd-box-title">Participantes do grupo</div>'
+    +'<table class="pd-membros-table"><thead><tr><th>#</th><th>Nome completo</th><th>Turma</th></tr></thead><tbody>'
+    +membrosAtivos.map(function(m,i){return '<tr><td style="text-align:center">'+(i+1)+'</td><td>'+m.nome+'</td><td>'+(m.turma||'')+'</td></tr>';}).join('')
+    +(membrosAtivos.length<6?new Array(6-membrosAtivos.length).fill('<tr><td style="text-align:center;color:#ccc">—</td><td>&nbsp;</td><td></td></tr>').join(''):'')
+    +'</tbody></table></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Produto escolhido e Persona</div>'
+    +'<div class="pd-field"><label>Produto</label><div class="val">'+prodNome+'</div></div>'
+    +'<div class="pd-field"><label>Identificação do produto</label><div class="val">'+prodInfo+'</div></div>'
+    +'<div class="pd-field"><label>Persona</label><div class="val">'+personaNome+'</div></div>'
+    +'<div class="pd-field"><label>Descrição do persona</label><div class="val" style="min-height:40px;white-space:pre-wrap;font-size:9.5px">'+personaDesc+'</div></div>'
+    +'</div>'
+    +'<div style="border-top:2.5px solid #2e7d32;margin:14px 0 10px;padding-top:8px"><span style="font-size:12px;font-weight:700;color:#2e7d32">PARTE 1 — Nível Esperado de Prestação de Serviço</span></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Avaliação do nível esperado de prestação de serviço (pelo mercado alvo)</div>'
+    +'<table class="pd-table"><thead><tr><th style="width:16%">Variável</th><th style="width:28%">Pergunta</th><th style="width:6%;text-align:center">Col.</th><th style="width:16%">Opção marcada</th><th style="width:34%">Indique as atividades / preocupações do canal</th></tr></thead><tbody>'+p1Rows+'</tbody></table></div>'
+    +'<div class="pd-page-break"></div>'
+    +'<div class="pd-header"><div><div style="font-size:12px;font-weight:700;color:#2e7d32">Canais de Vendas — Versão Produto</div></div><div style="text-align:right;font-size:9px;color:#888">'+prodNome+' · '+turma+' · '+cidade+' · '+data+'</div></div>'
+    +'<div style="border-top:2.5px solid #2e7d32;margin:0 0 10px;padding-top:8px"><span style="font-size:12px;font-weight:700;color:#2e7d32">PARTE 2 — Variáveis que Afetam a Estrutura do Canal (29 variáveis · mín. 29 · máx. 87 · corte: 58)</span></div>'
+    +'<div style="font-size:9.5px;color:#555;margin-bottom:10px">Coluna 1 = tende para canal direto &nbsp;|&nbsp; Coluna 2 = neutro &nbsp;|&nbsp; Coluna 3 = tende para canal indireto</div>'
+    +p2Secs
+    +'<div class="pd-box" style="margin-top:10px"><div class="pd-box-title">Pontuação total — 29 variáveis</div>'
+    +P2_GRUPOS.map(function(g,gi){return '<div class="pd-score-row"><span>'+g.nome+'</span><span style="font-weight:700">'+getGT(gi)+' / '+(g.vars.length*3)+' pts</span></div>';}).join('')
+    +'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#2e7d32;color:#fff;border-radius:4px;margin-top:8px"><span style="font-weight:700">TOTAL GERAL (29 variáveis)</span><span style="font-size:20px;font-weight:800">'+total+' / '+mx+'</span></div>'
+    +'<div style="margin:8px 0"><div class="pd-track-outer"><div class="pd-track-fill" style="width:'+Math.max(1,Math.min(99,pct))+'%"></div></div><div style="display:flex;justify-content:space-between;font-size:9px;color:#aaa"><span>'+mn+' — direto</span><span>58 — ponto de corte</span><span>'+mx+' — indireto</span></div></div>'
+    +(v.cls?'<div class="pd-verdict '+v.cls+'">'+v.txt+'</div>':'')
+    +'</div>'
+    +'<div class="pd-page-break"></div>'
+    +'<div class="pd-header"><div><div style="font-size:12px;font-weight:700;color:#2e7d32">Canais de Vendas — Versão Produto</div></div><div style="text-align:right;font-size:9px;color:#888">'+prodNome+' · '+turma+' · '+cidade+' · '+data+'</div></div>'
+    +'<div style="border-top:2.5px solid #2e7d32;margin:0 0 10px;padding-top:8px"><span style="font-size:12px;font-weight:700;color:#2e7d32">PARTE 3 — Recomendação de Canal</span></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Tipo de canal recomendado</div><div style="font-size:14px;font-weight:800;color:#2e7d32;padding:6px 0">'+(canalTipo?canalNomes[canalTipo]:'— Não selecionado —')+'</div></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Descrição do canal proposto</div><div style="min-height:80px;white-space:pre-wrap;font-size:10.5px;line-height:1.6">'+canalDesc+'</div></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Justificativa</div><div style="min-height:60px;white-space:pre-wrap;font-size:10.5px;line-height:1.6">'+canalJust+'</div></div>'
+    +'<div class="pd-box"><div class="pd-box-title">Cuidados e restrições — Teoria das Restrições</div><div style="min-height:60px;white-space:pre-wrap;font-size:10.5px;line-height:1.6">'+canalRest+'</div></div>'
+    +'<div style="margin-top:20px;border:2px solid #2e7d32;border-radius:6px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:20px">'
+    +'<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#2e7d32;margin-bottom:6px">Nota do trabalho</div><div style="font-size:28px;font-weight:800;color:#2e7d32;border-bottom:2px solid #2e7d32;min-width:80px;text-align:center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></div>'
+    +'<div style="text-align:center"><div style="font-size:9px;color:#888;margin-bottom:22px">Data de entrega</div><div style="border-bottom:1px solid #888;min-width:130px">&nbsp;</div></div>'
+    +'<div style="text-align:center"><div style="font-size:9px;color:#888;margin-bottom:22px">Assinatura do Professor</div><div style="border-bottom:1px solid #888;min-width:180px">&nbsp;</div></div>'
+    +'</div>'
+    +'<div class="pd-footer">Desenho e Gestão Integrada de Canais de Vendas — Versão Produto &nbsp;·&nbsp; Prof. José Luiz Meinberg &nbsp;·&nbsp; '+turma+' · '+cidade+' · '+data+'</div>'
+    +'</div>';
+
+  var pd=document.getElementById('print-doc');
+  pd.innerHTML=html;
+  document.querySelector('.app').style.display='none';
+  pd.style.display='block';
+  window.print();
+  document.querySelector('.app').style.display='';
+  pd.style.display='none';
+}
+
+function gerarExport(){
+  var total=getTotal();
+  var v=getVerdict(total);
+  var nomes={direto:'Canal Direto',indireto:'Canal Indireto',hibrido:'Canal Híbrido'};
+  var txt='================================================\n  CANAIS DE VENDAS — VERSÃO PRODUTO\n  Prof. José Luiz Meinberg\n================================================\n';
+  txt+='Turma: '+(document.getElementById('turma').value||'—')+'  |  Cidade: '+(document.getElementById('cidade').value||'—')+'  |  Data: '+(document.getElementById('data_aula').value||'—')+'\n';
+  txt+='Produto: '+(produtoSel?produtoSel.titulo:'—')+'\n\n';
+  txt+='PARTICIPANTES\n─────────────\n';
+  membros.filter(function(m){return m.nome;}).forEach(function(m,i){txt+=(i+1)+'. '+m.nome+(m.turma?' — '+m.turma:'')+'\n';});
+  txt+='\nPARTE 1 — NÍVEL DE SERVIÇO\n──────────────────────────\n';
+  P1_VARS.forEach(function(v){
+    var sel=p1Sels[v.id];
+    var insEl=document.getElementById('ins_'+v.id);
+    txt+=v.nome+': Coluna '+(sel||'—')+' ('+(sel===1?v.c1:sel===3?v.c3:'neutro')+')\n';
+    if(insEl&&insEl.value)txt+='  Atividades/Preocupações: '+insEl.value+'\n';
+  });
+  txt+='\nPARTE 2 — VARIÁVEIS DO CANAL (29 variáveis)\n──────────────────────────────────────────────\n';
+  P2_GRUPOS.forEach(function(g,gi){
+    txt+='\n['+g.nome+'] '+getGT(gi)+' pts\n';
+    g.vars.forEach(function(v){var sel=p2Sels[v.id];txt+='  '+v.nome+': '+(sel||'—')+' '+(sel===1?'→ DIRETO ('+v.c1+')':sel===3?'→ INDIRETO ('+v.c3+')':sel===2?'neutro':'')+'\n';});
+  });
+  txt+='\nPONTUAÇÃO TOTAL: '+total+' / 87\n'+v.txt+'\n(ponto de corte: 58 — ≥58 = indireto · <58 = direto)\n';
+  txt+='\nPARTE 3 — CANAL RECOMENDADO\n────────────────────────────\n';
+  txt+='Tipo: '+(canalTipo?nomes[canalTipo]:'—')+'\n';
+  txt+='Descrição:\n'+(document.getElementById('canal_desc').value||'—')+'\n\n';
+  txt+='Justificativa:\n'+(document.getElementById('canal_just').value||'—')+'\n\n';
+  txt+='Restrições:\n'+(document.getElementById('canal_rest').value||'—')+'\n';
+  txt+='================================================\n';
+  var wrap=document.getElementById('export-wrap');
+  var area=document.getElementById('export-area');
+  area.value=txt;wrap.style.display='block';
+  area.scrollIntoView({behavior:'smooth'});
+}
+
+function copiarExport(){
+  var el=document.getElementById('export-area');
+  el.select();
+  try{document.execCommand('copy');alert('Copiado! Cole no e-mail ou WhatsApp para o professor.');}
+  catch(e){alert('Selecione o texto manualmente e copie com Ctrl+C.');}
+}
+
+renderMembros();renderProdutos();renderP1();renderP2();
+</script>
+</body>
+</html>
